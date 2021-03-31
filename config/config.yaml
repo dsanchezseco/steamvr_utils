@@ -1,0 +1,51 @@
+# copy to config.yaml to customize
+
+dry_run: false  # Boolean. Do not change anything.
+
+log:
+  enabled: true  # Boolean. Write a log for each execution.
+
+basestation:
+  enabled: true  # Boolean. Enable the Base Station component.
+  type: 'v2'  # Enum(v1, v2, cmd). Version of your Base Stations or 'cmd' for custom commands.
+
+  # ==== FOR V1 AND V2 BASE STATIONS ====
+  attempt_count_set: 5  # Int >0. Number of attempts to set the power state of Base Station.
+  bluetooth_interface: 0  # Int. Number of the bluetooth interface (hci{number}) to use.
+  # Run `hciconfig -a` for a list of bluetooth interfaces.
+
+  # ==== FOR V2 BASE STATIONS ONLY ====
+  attempt_count_scan: 5  # Int >0. Maximum number of attempts to find Base Stations.
+  scan_type: 'active'  # Enum(active, passive). Type of bluetooth scan to use (see https://github.com/DavidRisch/steamvr_utils/issues/3#issuecomment-768580652).
+
+  # ==== FOR V1 BASE STATIONS ONLY ====
+  # (change the 'type' (a few lines up) to 'v1')
+  lh_b_mac: ''  # String(XX:XX:XX:XX:XX:XX). Bluetooth MAC address of Lighthouse B.
+  lh_b_id: ''  # String(XXXXXXXX). ID of Lighthouse B (printed on the back).
+  lh_c_mac: ''  # String(XX:XX:XX:XX:XX:XX). Bluetooth MAC address of Lighthouse C.
+  lh_c_id: ''  # String(XXXXXXXX). ID of Lighthouse C (printed on the back).
+  # See https://github.com/risa2000/lhctrl for details.
+  # If your Base Stations operate in A/B mode (with a sync cable), fill the fields intended for C with the values from A.
+
+  # ==== FOR CUSTOM BASE STATIONS COMMANDS ONLY ====
+  # (change the 'type' (a few lines up) to 'cmd')
+  command_on: [ 'bash', '-c', 'echo command_on | tee /tmp/steamvr_basestation_command_test' ] # List of strings. Command to execute in order to turn Base Stations on.
+  command_off: [ 'bash', '-c', 'echo command_off | tee /tmp/steamvr_basestation_command_test' ] # List of strings. Command to execute in order to turn Base Stations off.
+  # This can be used to control the base stations in an unconventional setup (e.g. https://github.com/DavidRisch/steamvr_utils/issues/8).
+
+audio:
+  enabled: false  # Boolean. Enable the Base Station component.
+  vr_sink_regex: '.*hdmi.*'  # Regex. Used to find the audio sink of the vr headset.
+  normal_sink_regex: ''  # Regex. Used to find the audio sink of the regular audio device. Leave empty to detect automatically (not recommended).
+  excluded_clients_regexes: # List of regexes. Used to ignore some audio clients. Intended for application not needed in vr.
+    - 'firefox'
+  set_card_port: true  # Boolean. Enable automatic changing the correct port.
+  card_port_vr_product_name_regex: '(Index HMD)|(VIVE)'  # Regex. Used to find the card and port on that card which the vr headset is connected to.
+  card_port_normal_product_name_regex: ''  # Regex. Used to find the card and port on that card to restore audio to the normal device.
+  # Use `pactl list cards | grep 'device.product.name'` while SteamVR is running to find the name of your vr headset.
+  card_rescan_pause_time: 10  # Float. Number of seconds to wait between suspending and resuming a sink to rescan the ports of its card.
+
+daemon:
+  watch_process_name: 'vrcompositor'  # String. Name of the process which indicated SteamVR is running.
+  wait_after_quit: 60  # Float. Number of seconds to wait after SteamVR exits until Base Stations are turned off (and audio is switched). Useful to prevent a power cycle when restarting SteamVR.
+
